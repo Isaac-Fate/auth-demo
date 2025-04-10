@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:alpine
+    container_name: "auth-demo-postgres"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - ${POSTGRES_DATA_DIR}:/var/lib/postgresql/data
+
+  # frontend:
+  #   image: oven/bun:slim
+  #   working_dir: /app
+  #   volumes:
+  #     - ./aiknowledge-frontend:/app
+  #     # Isolate node modules
+  #     - /app/node_modules
+  #   command: bun run dev
+  #   depends_on:
+  #     - backend
+
+  # backend:
+  #   image: python:3.11-slim
+  #   working_dir: /app
+  #   volumes:
+  #     - ./aiknowledge-backend:/app
+  #     # Isolate virtual environment
+  #     - /app/.venv
+  #   command: fastapi dev src/aiknowledge-backend/api
+  #   depends_on:
+  #     - qdrant
+  #     - postgres
