@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const SignUpFormDataSchema = z
   .object({
+    displayName: z.string().min(1),
     email: z.string().email(),
     password: z.string().min(8),
     confirmedPassword: z.string().min(8),

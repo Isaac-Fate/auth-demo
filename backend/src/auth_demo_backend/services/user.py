@@ -1,65 +1,75 @@
 from sqlmodel import Session, select
-from sqlalchemy import Engine
 from typing import Optional
 import bcrypt
-from ..schemas import User, UserCreate
+
+from auth_demo_backend.db.models import UserInDB
+from auth_demo_backend.models import User, UserCreate
 
 
-def create_user(engine: Engine, user: User):
+def create_user(db_session: Session, user_create: UserCreate) -> User:
 
-    # Store the user ID
-    user_id = user.id
+    # Create a new user in the database
+    user_in_db = UserInDB(**user_create.model_dump())
 
-    with Session(engine) as session:
+    # Insert into database
+    db_session.add(user_in_db)
 
-        # Insert into database
-        session.add(user)
+    # Commit transaction
+    db_session.commit()
 
-        # Commit transaction
-        session.commit()
+    # Refresh the object to get the latest data
+    db_session.refresh(user_in_db)
 
-    return user_id
+    # Convert to Pydantic model
+    user = User.model_validate(user_in_db)
+
+    return user
 
 
-def create_user_by_email_password(engine: Engine, user_create: UserCreate):
+def create_user_by_email_and_password(db_session: Session, user_create: UserCreate):
 
     # Hash the password
     hashed_password = bcrypt.hashpw(
-        user_create.password.encode("utf-8"), bcrypt.gensalt()
+        user_create.password.encode("utf-8"),
+        bcrypt.gensalt(),
     ).hex()
 
-    # Create a new user
-    user = User(
-        display_name=user_create.display_name,
-        email=user_create.email,
-        hashed_password=hashed_password,
-    )
+    # Convert to a dictionary
+    user_create_dict = user_create.model_dump()
 
-    # Get the user ID
-    user_id = user.id
+    # Remove the password field
+    user_create_dict.pop("password")
 
-    with Session(engine) as session:
+    # Create a UserInDB instance
+    user_in_db = UserInDB(**user_create_dict, hashed_password=hashed_password)
 
-        # Insert into database
-        session.add(user)
+    # Insert into database
+    db_session.add(user_in_db)
 
-        # Commit transaction
-        session.commit()
+    # Commit transaction
+    db_session.commit()
 
-    return user_id
+    # Refresh the object to get the latest data
+    db_session.refresh(user_in_db)
+
+    # Convert to Pydantic model
+    user = User.model_validate(user_in_db)
+
+    return user
 
 
-def get_user_by_email(engine: Engine, email: str) -> Optional[User]:
+def get_user_by_email(db_session: Session, email: str) -> Optional[User]:
 
-    with Session(engine) as session:
+    # Query statement
+    statement = select(User).where(User.email == email)
 
-        # Query statement
-        statement = select(User).where(User.email == email)
+    # Execute
+    user_in_db = db_session.exec(statement).one_or_none()
 
-        # Execute
-        result = session.exec(statement)
+    if user_in_db is None:
+        return None
 
-        # Get the user
-        user = result.one_or_none()
+    # Convert to Pydantic model
+    user = User.model_validate(user_in_db)
 
     return user

@@ -1,8 +1,8 @@
-"""first revision
+"""add server default for uuid
 
-Revision ID: 192348557256
-Revises: 
-Create Date: 2025-04-08 23:22:34.559822
+Revision ID: d03f955f64d9
+Revises: 0fb6a55d8a74
+Create Date: 2025-04-24 01:30:17.931964
 
 """
 from typing import Sequence, Union
@@ -10,10 +10,14 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
+# Import sqlmodel package
+import sqlmodel
+
+
 
 # revision identifiers, used by Alembic.
-revision: str = '192348557256'
-down_revision: Union[str, None] = None
+revision: str = 'd03f955f64d9'
+down_revision: Union[str, None] = '0fb6a55d8a74'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

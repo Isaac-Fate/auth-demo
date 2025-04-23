@@ -5,10 +5,12 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from sqlmodel import SQLModel
-from auth_demo_backend.schemas import *
+
+from auth_demo_backend.db.models import SQLAlchemyBaseModel
 from auth_demo_backend.config import load_config
 
+# Alembic autogenerate support for creation, alteration and deletion of enums
+import alembic_postgresql_enum
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,7 +26,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
-target_metadata = SQLModel.metadata
+target_metadata = SQLAlchemyBaseModel.metadata
 
 
 # other values from the config, defined by the needs of env.py,

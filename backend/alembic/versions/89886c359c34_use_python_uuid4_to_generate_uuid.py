@@ -1,8 +1,8 @@
-"""back populates  accounts
+"""use python uuid4 to generate uuid
 
-Revision ID: 98631a05ced3
-Revises: d5826ba28549
-Create Date: 2025-04-09 18:25:43.081300
+Revision ID: 89886c359c34
+Revises: d03f955f64d9
+Create Date: 2025-04-24 01:33:09.668070
 
 """
 from typing import Sequence, Union
@@ -16,8 +16,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '98631a05ced3'
-down_revision: Union[str, None] = 'd5826ba28549'
+revision: str = '89886c359c34'
+down_revision: Union[str, None] = 'd03f955f64d9'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

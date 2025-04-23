@@ -6,14 +6,22 @@ from dotenv import find_dotenv
 
 class Config(BaseSettings):
 
-    # Postgres
+    frontend_url: str
 
+    # Postgres
     postgres_user: str
     postgres_password: str
     postgres_db: str
     postgres_port: int
     postgres_data_dir: Path
     postgres_uri: str
+
+    # Google OAuth
+    google_client_id: str
+    google_client_secret: str
+
+    # JWT
+    jwt_secret_key: str
 
     # Configuration of this schema
     model_config = SettingsConfigDict(
