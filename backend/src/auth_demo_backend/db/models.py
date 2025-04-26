@@ -34,10 +34,7 @@ class AccountInDB(SQLAlchemyBaseModel):
 
     id = Column(UUID, primary_key=True, default=uuid4)
     user_id = Column(UUID, ForeignKey("users.id"), nullable=False)
-    account_provider = Column(
-        Enum(AccountProvider),
-        nullable=False,
-    )
+    account_provider = Column(Enum(AccountProvider), nullable=False)
     created_at = Column(DateTime, default=utcnow)
 
     user = relationship("UserInDB", back_populates="accounts")

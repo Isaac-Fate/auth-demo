@@ -1,5 +1,5 @@
-from sqlmodel import Session, select
 from typing import Optional
+from sqlmodel import Session, select
 import bcrypt
 
 from auth_demo_backend.db.models import UserInDB

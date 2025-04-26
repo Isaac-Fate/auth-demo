@@ -9,6 +9,7 @@ from ..config import load_config
 from .. import services
 from .routers.health import router as health_router
 from .routers.auth import router as auth_router
+from .middlewares import auth_middleware
 
 
 @asynccontextmanager
@@ -44,7 +45,10 @@ async def lifespan(app: FastAPI):
     print("Shutting down...")
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title="Auth Demo",
+    lifespan=lifespan,
+)
 
 
 app.add_middleware(
@@ -59,6 +63,9 @@ app.add_middleware(
     SessionMiddleware,
     "app-secret-key",
 )
+
+# Add the auth middleware
+app.middleware("http")(auth_middleware)
 
 # API router
 api_router = APIRouter(prefix="/api")
