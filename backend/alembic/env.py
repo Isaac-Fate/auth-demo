@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 
-from auth_demo_backend.db.models import SQLAlchemyBaseModel
+from auth_demo_backend.infrastructure.persistence.models import SQLAlchemyBaseModel
 from auth_demo_backend.config import load_config
 
 # Alembic autogenerate support for creation, alteration and deletion of enums

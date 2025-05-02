@@ -1,13 +1,19 @@
-from abc import ABC, abstractmethod
-from ..models.user import User
+from typing import Protocol, Optional
+from abc import abstractmethod
+
+from ..entities import User
 
 
-class UserRepository(ABC):
+class IUserRepository(Protocol):
 
     @abstractmethod
-    def create_user(self, user: User) -> User:
+    def add_user(self, user: User) -> None:
         pass
 
     @abstractmethod
-    def get_user_by_email(self, email: str) -> User:
+    def get_user_by_id(self, user_id: int) -> User:
+        pass
+
+    @abstractmethod
+    def find_user_by_email(self, email: str) -> Optional[User]:
         pass

@@ -22,6 +22,7 @@ class Config(BaseSettings):
 
     # JWT
     jwt_secret_key: str
+    jwt_algorithm: str
 
     # Configuration of this schema
     model_config = SettingsConfigDict(
