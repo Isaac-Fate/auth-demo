@@ -10,6 +10,10 @@ class AuthService:
 
         self._domain_auth_service = domain_auth_service
 
+    def get_current_user(self, access_token: str) -> User:
+
+        return self._domain_auth_service.verify_access_token(access_token)
+
     def sign_up_with_email_and_password(
         self,
         display_name: str,

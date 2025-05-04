@@ -4,8 +4,10 @@ from typing import Callable, Awaitable
 
 SKIP_PATHS = [
     "/api/health",
-    "/api/auth/sign-up",
-    "/api/auth/sign-in",
+]
+
+SKIP_PATH_PREFIXES = [
+    "/api/auth",
 ]
 
 
@@ -15,17 +17,20 @@ async def auth_middleware(
 ):
 
     # Skip the paths that do not require authentication
+
     if request.url.path in SKIP_PATHS:
         return await call_next(request)
 
-    # Get the access token from the request
-    access_token = request.headers.get("Authorization")
+    if any(request.url.path.startswith(prefix) for prefix in SKIP_PATH_PREFIXES):
+        return await call_next(request)
 
-    # Remove the "Bearer " prefix from the access token
-    access_token = access_token.removeprefix("Bearer ")
+    # Get the access token from the request
+    access_token = request.headers.get("Authorization", "").removeprefix("Bearer ")
 
     # Verify the access token
     # verify_access_token(access_token)
+
+    print(f"access token detected in middleware: {access_token}")
 
     response = await call_next(request)
 

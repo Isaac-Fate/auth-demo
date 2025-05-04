@@ -20,7 +20,7 @@ class JWTAccessTokenIssuer(IAccessTokenIssuer):
         payload = {
             "user": {
                 "id": user.id,
-                "display_name": user.display_name,
+                "displayName": user.display_name,
                 "email": user.email,
             },
             "exp": dt.datetime.now(dt.UTC) + EXPIRATION_DURATION,
@@ -46,7 +46,7 @@ class JWTAccessTokenIssuer(IAccessTokenIssuer):
 
         user = User(
             id=user_dict["id"],
-            display_name=user_dict["display_name"],
+            display_name=user_dict["displayName"],
             email=user_dict["email"],
         )
 

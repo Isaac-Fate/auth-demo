@@ -1,9 +1,8 @@
 from typing import Optional
 
-from ..repositories import IUserRepository, IUnitOfWork, IAccountRepository
-from ..ports import IPasswordHasher, IAccessTokenIssuer
+from ..repositories import IUnitOfWork
+from ..ports import IAccessTokenIssuer
 from ..entities import User, Account
-from ..value_objects import AccountProvider
 
 
 class AuthService:
@@ -107,6 +106,9 @@ class AuthService:
 
         return access_token
 
-    def verify_access_token(self, access_token: str):
+    def verify_access_token(self, access_token: str) -> User:
 
-        pass
+        # Verify the access token and get the user
+        user = self._access_token_issuer.verify_access_token(access_token)
+
+        return user
