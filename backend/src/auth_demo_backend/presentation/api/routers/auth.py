@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Request
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
+import httpx
 
-
+from auth_demo_backend.config import Config
 from auth_demo_backend.application.services.auth_service import AuthService
 from ..models import (
     SignInWithEmailAndPasswordRequest,
@@ -10,7 +11,7 @@ from ..models import (
     SignUpWithEmailAndPasswordRequest,
     GetCurrentUserResponse,
 )
-from ..dependencies import get_auth_service, get_oauth
+from ..dependencies import get_auth_service, get_oauth, get_config
 
 router = APIRouter(prefix="/auth")
 
@@ -102,31 +103,56 @@ async def sign_in_with_google(
     oauth: OAuth = Depends(get_oauth),
 ):
 
-    google_client = oauth.create_client("google")
+    google_client: StarletteOAuth2App = oauth.create_client("google")
     redirect_uri = request.url_for("sign_in_with_google_callback")
 
     redirect_response = await google_client.authorize_redirect(
         request=request,
         redirect_uri=redirect_uri,
+        prompt="consent",
     )
 
     return redirect_response
+
+    authorization_url_with_state = await google_client.create_authorization_url(
+        redirect_uri=str(redirect_uri),
+        prompt="consent",
+    )
+
+    print("authorization_url_with_state:")
+    print(authorization_url_with_state)
+
+    authorization_url = authorization_url_with_state.get("url")
+    state = authorization_url_with_state.get("nonce")
+
+    return RedirectResponse(url=authorization_url)
 
 
 @router.get("/sign-in/google/callback", summary="Sign In With Google Callback")
 async def sign_in_with_google_callback(
     request: Request,
+    config: Config = Depends(get_config),
     oauth: OAuth = Depends(get_oauth),
 ):
 
     google_client: StarletteOAuth2App = oauth.create_client("google")
-    access_token_response = await google_client.authorize_access_token(request)
+    # access_token_response = await google_client.authorize_access_token(request)
 
-    # return access_token_response
+    redirect_uri = str(request.url_for("sign_in_with_google_callback"))
+
+    print(f"request.query_params: {request.query_params}")
+    print(f"request.query_params.get('code'): {request.query_params.get('code')}")
+    print(f"request.query_params.get('state'): {request.query_params.get('state')}")
+
+    access_token_response = await google_client.fetch_access_token(
+        redirect_uri=redirect_uri,
+        code=request.query_params.get("code"),
+        state=request.query_params.get("state"),
+    )
 
     print(access_token_response)
 
-    return RedirectResponse(url="http://localhost:3000")
+    return RedirectResponse(url=config.frontend_base_url)
 
 
 @router.get(
@@ -136,6 +162,7 @@ async def sign_in_with_google_callback(
 )
 async def sign_out(
     request: Request,
+    config: Config = Depends(get_config),
     oauth: OAuth = Depends(get_oauth),
 ):
 
@@ -147,10 +174,27 @@ async def sign_out(
     # Clear the session
     request.session.clear()
 
-    # Revoke the access token
-    google_client.revoke_token(access_token)
+    # Revoke Google token
+    is_revoked = await revoke_google_token(access_token)
 
-    # return RedirectResponse(google_logout_url)
+    if not is_revoked:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Failed to revoke Google token",
+        )
 
     # Redirect to the home page
-    return RedirectResponse(url="/")
+    return RedirectResponse(url=config.frontend_base_url)
+
+
+async def revoke_google_token(token: str):
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                "https://oauth2.googleapis.com/revoke",
+                params={"token": token},
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+        return True
+    except Exception:
+        return False

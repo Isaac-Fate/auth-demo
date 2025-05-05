@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Optional
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -12,11 +13,9 @@ class AccountInDB(SQLAlchemyBaseModel):
     __tablename__ = "accounts"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    provider: Mapped[AccountProvider] = mapped_column(nullable=False)
+    provider: Mapped[AccountProvider] = mapped_column()
     email: Mapped[str] = mapped_column(index=True, unique=True)
-    created_at: Mapped[dt.datetime] = mapped_column(
-        default=utcnow(),
-        nullable=False,
-    )
+    avatar_url: Mapped[Optional[str]] = mapped_column()
+    created_at: Mapped[dt.datetime] = mapped_column(default=utcnow())
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))

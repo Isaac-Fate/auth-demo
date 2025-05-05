@@ -12,6 +12,7 @@ class AccountMapper(IMapper):
             id=account_in_db.id,
             provider=account_in_db.provider,
             email=account_in_db.email,
+            avatar_url=account_in_db.avatar_url,
         )
 
         return account
@@ -22,6 +23,7 @@ class AccountMapper(IMapper):
         account_in_db = AccountInDB(
             provider=account.provider,
             email=account.email,
+            avatar_url=account.avatar_url,
         )
 
         if account.is_id_set():

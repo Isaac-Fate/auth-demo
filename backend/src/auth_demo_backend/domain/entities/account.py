@@ -12,6 +12,7 @@ class Account(Entity):
         id: Optional[int] = None,
         email: str,
         provider: AccountProvider,
+        avatar_url: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> None:
 
@@ -19,6 +20,7 @@ class Account(Entity):
 
         self.email = email
         self.provider = provider
+        self.avatar_url = avatar_url
         self.user_id = user_id
 
     def link_to_user(self, user_id: int) -> None:

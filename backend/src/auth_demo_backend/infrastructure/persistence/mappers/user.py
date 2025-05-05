@@ -13,6 +13,7 @@ class UserMapper(IMapper):
             display_name=user_in_db.display_name,
             email=user_in_db.email,
             hashed_password=user_in_db.hashed_password,
+            avatar_url=user_in_db.avatar_url,
         )
 
         return user
@@ -24,6 +25,7 @@ class UserMapper(IMapper):
             display_name=user.display_name,
             email=user.email,
             hashed_password=user.hashed_password,
+            avatar_url=user.avatar_url,
         )
 
         if user.is_id_set():

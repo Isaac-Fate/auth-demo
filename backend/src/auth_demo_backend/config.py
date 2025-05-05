@@ -6,7 +6,7 @@ from dotenv import find_dotenv
 
 class Config(BaseSettings):
 
-    frontend_url: str
+    frontend_base_url: str
 
     # Postgres
     postgres_user: str

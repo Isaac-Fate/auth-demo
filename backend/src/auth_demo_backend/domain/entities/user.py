@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Optional, Self
 import bcrypt
 
@@ -7,10 +6,6 @@ from .entity import Entity
 
 class User(Entity):
 
-    display_name: str
-    email: str
-    hashed_password: Optional[str] = None
-
     def __init__(
         self,
         *,
@@ -18,6 +13,7 @@ class User(Entity):
         display_name: str,
         email: str,
         hashed_password: Optional[str] = None,
+        avatar_url: Optional[str] = None,
     ) -> None:
 
         super().__init__(id)
@@ -25,6 +21,7 @@ class User(Entity):
         self.display_name = display_name
         self.email = email
         self.hashed_password = hashed_password
+        self.avatar_url = avatar_url
 
     @classmethod
     def from_sign_up(cls, display_name: str, email: str, password: str) -> Self:
@@ -61,3 +58,7 @@ class User(Entity):
             password.encode("utf-8"),
             bytes.fromhex(self.hashed_password),
         )
+
+    def set_avatar_url(self, avatar_url: str) -> None:
+
+        self.avatar_url = avatar_url
